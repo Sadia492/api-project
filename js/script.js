@@ -160,7 +160,7 @@ const displayNews = (news) => {
                     } </h5>
                   </div>
                   <div class="w-10 h-10 rounded-full bg-blue-500">
-        <button onclick="showAModal('${image_url}', \`${sanitizedDetails}\`, \'${title}'\, \'${img}'\, \'${total_view}'\, \'${name}'\)">
+        <button onclick="showAModal('${image_url}',\`${sanitizedDetails}\`,\`${title}\`, \`${img}\`,\`${total_view}\`, \`${name}\`)">
     <img src="https://img.icons8.com/?size=50&id=11759&format=png" />
   </button>
 </div>
@@ -180,31 +180,35 @@ const displayNews = (news) => {
 const showAModal = (img, details, title, profile, total_view, name) => {
   const modalContainer = document.getElementById("modal-container");
   modalContainer.innerHTML = `
-     <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-      <div class="modal-box">
-      <h3 class="text-lg font-bold border-b-2 mb-2">${title}</h3>
-      <img src=${img} />
-
-       <div class="flex items-center mt-3 justify-between gap-4">
-        <div class="flex items-center">
-            <img class="w-10 h-10 mr-2 rounded-full" src=${profile} >
-            <p class="font-bold">${name}</p>
+      <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold border-b-2 mb-2">${title}</h3>
+          <img src=${img} />
+  
+          <div class="flex items-center mt-3 justify-between gap-4">
+            <div class="flex items-center">
+              <img class="w-10 h-10 mr-2 rounded-full" src=${profile} >
+              <p class="font-bold">${name}</p>
+            </div>
+            <p class="font-bold">${total_view} Views</p>
+          </div>
+          <p class="py-4">${details}</p>
+          <div class="modal-action">
+            <form method="dialog">
+              <button class="btn">Close</button>
+            </form>
+          </div>
         </div>
-        <p class="font-bold">${total_view} Views</p>
-    </div>
-        <p class="py-4">${details}</p>
-        <div class="modal-action">
-          <form method="dialog">
-            <!-- if there is a button in form, it will close the modal -->
-            <button class="btn">Close</button>
-          </form>
-        </div>
-      </div>
-    </dialog>
-
+      </dialog>
     `;
 
-  my_modal_5.showModal();
+  // Adding a delay to ensure modal is rendered
+  setTimeout(() => {
+    const modal = document.getElementById("my_modal_5");
+    if (modal) {
+      modal.showModal();
+    }
+  }, 100);
 };
 
 // for showing trending news
@@ -223,21 +227,6 @@ const loadTrendingNews = async (id) => {
     `https://openapi.programming-hero.com/api/news/category/${id ? id : "01"}`
   );
   const data = await res.json();
-  //   displayTrending(data.data);
-
-  //   let trendingNewsArray = [];
-  //   for (const category of data.data.news_category) {
-  //     const newsRes = await fetch(
-  //       `https://openapi.programming-hero.com/api/news/category/${category.category_id}`
-  //     );
-  //     const newsData = await newsRes.json();
-
-  //     // Filter out trending news and add to trendingNewsArray
-  //     const trendingNews = newsData.data.filter(
-  //       (news) => news?.others_info?.is_trending === true
-  //     );
-  //     trendingNewsArray = [...trendingNewsArray, ...trendingNews];
-  //   }
 
   // Sort trending news by views
   const sorted = data.data.sort(
@@ -262,7 +251,6 @@ const displayTrending = (data) => {
   data.forEach((single) => {
     if (single.others_info.is_trending === true) {
       empty.push(single);
-
       const {
         author: { img, name, published_date },
         image_url,
@@ -321,9 +309,10 @@ const displayTrending = (data) => {
                     } </h5>
                   </div>
                   <div class="w-10 h-10 rounded-full bg-blue-500">
-        <button onclick="showAModal('${image_url}', \`${sanitizedDetails}\`, \'${title}'\, \'${img}'\, \'${total_view}'\, \'${name}'\)">
+       <button onclick="hello('${image_url}',\`${sanitizedDetails}\`,\`${title}\`, \`${img}\`,\`${total_view}\`, \`${name}\`)">
     <img src="https://img.icons8.com/?size=50&id=11759&format=png" />
   </button>
+
 </div>
 
                 </div>
@@ -337,6 +326,40 @@ const displayTrending = (data) => {
   });
 };
 
+//
+
+const hello = (img, details, title, profile, total_view, name) => {
+  const modalContainer = document.getElementById("trending-modal-container");
+  modalContainer.innerHTML = `
+         <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold border-b-2 mb-2">${title}</h3>
+          <img src=${img} />
+  
+          <div class="flex items-center mt-3 justify-between gap-4">
+            <div class="flex items-center">
+              <img class="w-10 h-10 mr-2 rounded-full" src=${profile} >
+              <p class="font-bold">${name}</p>
+            </div>
+            <p class="font-bold">${total_view} Views</p>
+          </div>
+          <p class="py-4">${details}</p>
+          <div class="modal-action">
+            <form method="dialog">
+              <button class="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+    `;
+  // Adding a delay to ensure modal is rendered
+  setTimeout(() => {
+    const modal = document.getElementById("my_modal_5");
+    if (modal) {
+      modal.showModal();
+    }
+  }, 100);
+};
 //
 document.getElementById("trendy-btn").addEventListener("click", () => {
   document.getElementById("news-container").classList.add("hidden");
