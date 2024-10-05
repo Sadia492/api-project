@@ -1,4 +1,3 @@
-// spinner add korbo
 // for category data loading
 const loadCategoryData = async () => {
   try {
@@ -56,10 +55,19 @@ const loadNews = async (id) => {
   document.getElementById("news-container").classList.add("hidden");
   document.getElementById("no-data").classList.add("hidden");
 
+  mostviewed.length = 0; // Clear mostviewed array for each category
   const res = await fetch(
-    `https://openapi.programming-hero.com/api/news/category/${id}`
+    `https://openapi.programming-hero.com/api/news/category/${id ? id : "01"}`
   );
   const data = await res.json();
+  loadTrendingNews(id);
+
+  //   if (status === true) {
+  //     if (data.data?.others_info?.is_trending === true) {
+  //       console.log("hello");
+  //     }
+  //   }
+
   const sortedNews = data.data.sort(
     (a, b) => (b.total_view || 0) - (a.total_view || 0)
   );
@@ -82,6 +90,8 @@ const loadNews = async (id) => {
   categoryBtn.classList.add("text-blue-500", "border-b-2", "border-blue-500");
 };
 
+let mostviewed = [];
+
 // for displaying news
 const displayNews = (news) => {
   document.getElementById("spinner").classList.add("hidden");
@@ -90,6 +100,8 @@ const displayNews = (news) => {
   newsContainer.innerHTML = "";
 
   news.forEach((item) => {
+    mostviewed.push(item);
+
     const {
       author: { img, name, published_date },
       image_url,
@@ -161,6 +173,7 @@ const displayNews = (news) => {
     `;
     newsContainer.appendChild(div);
   });
+  console.log(mostviewed.length);
 };
 
 // for showing modal
@@ -193,5 +206,163 @@ const showAModal = (img, details, title, profile, total_view, name) => {
 
   my_modal_5.showModal();
 };
+
+// for showing trending news
+// for loading trending news
+const loadTrendingNews = async (id) => {
+  document.getElementById("spinner").classList.remove("hidden");
+  document.getElementById("news-container").classList.add("hidden");
+  document.getElementById("trending-container").classList.add("hidden");
+  document.getElementById("no-data").classList.add("hidden");
+
+  // Clear the previous trending data
+  empty.length = 0; // Clear empty array for each category
+
+  // Fetching all the categories to get trending news
+  const res = await fetch(
+    `https://openapi.programming-hero.com/api/news/category/${id ? id : "01"}`
+  );
+  const data = await res.json();
+  //   displayTrending(data.data);
+
+  //   let trendingNewsArray = [];
+  //   for (const category of data.data.news_category) {
+  //     const newsRes = await fetch(
+  //       `https://openapi.programming-hero.com/api/news/category/${category.category_id}`
+  //     );
+  //     const newsData = await newsRes.json();
+
+  //     // Filter out trending news and add to trendingNewsArray
+  //     const trendingNews = newsData.data.filter(
+  //       (news) => news?.others_info?.is_trending === true
+  //     );
+  //     trendingNewsArray = [...trendingNewsArray, ...trendingNews];
+  //   }
+
+  // Sort trending news by views
+  const sorted = data.data.sort(
+    (a, b) => (b.total_view || 0) - (a.total_view || 0)
+  );
+
+  setTimeout(() => {
+    displayTrending(sorted);
+    if (data.data.length === 0) {
+      document.getElementById("no-data").classList.remove("hidden");
+    } else {
+      document.getElementById("no-data").classList.add("hidden");
+    }
+  }, 3000);
+};
+let empty = [];
+const displayTrending = (data) => {
+  //   document.getElementById("trending-container").classList.remove("hidden");
+  const trendingContainer = document.getElementById("trending-container");
+  trendingContainer.innerHTML = "";
+
+  data.forEach((single) => {
+    if (single.others_info.is_trending === true) {
+      empty.push(single);
+
+      const {
+        author: { img, name, published_date },
+        image_url,
+        title,
+        details,
+        total_view,
+      } = single;
+
+      const maxLength = 300; // Set max length for button attributes
+      const sanitizedDetails =
+        details.length > maxLength
+          ? details.substring(0, maxLength) + "..."
+          : details;
+
+      const div = document.createElement("div");
+      div.classList.add("shadow-md", "rounded-lg", "border-2", "lg:p-5", "p-1");
+      div.innerHTML = `
+    <div class="col">
+            <div class="singleNews grid grid-cols-1 lg:grid-cols-4">
+              <div
+                class=" d-flex justify-content-center align-items-center"
+              >
+                <img class="w-full rounded-lg h-full object-cover"
+                  src=${image_url}
+                />
+              </div>
+              <div class="content p-5 col-span-3">
+                <article class="writings space-y-5">
+                  <h1 class="text-3xl font-extrabold">${title}</h1>
+                  <p class="mb-5 multiline">
+              ${sanitizedDetails}
+                  </p>
+                </article>
+
+                <div
+                  class="info d-md-flex justify-content-between align-items-center"
+                >
+                  <div class="author d-flex">
+                    <div class="author-img rounded-full w-10 h-10">
+                      <img
+                        class="author-img w-full rounded-full object-cover"
+                        src=${img}
+                        alt=""
+                      />
+                    </div>
+                    <div class="author-info px-3">
+                      <h5>${name ? name : "No data available"}</h5>
+                      <p>${
+                        published_date ? published_date : " No data available"
+                      }</p>
+                    </div>
+                  </div>
+                  <div class="views">
+                    <h5 class="text-lg font-bold">${
+                      total_view ? `${total_view} Views` : "No data available"
+                    } </h5>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-blue-500">
+        <button onclick="showAModal('${image_url}', \`${sanitizedDetails}\`, \'${title}'\, \'${img}'\, \'${total_view}'\, \'${name}'\)">
+    <img src="https://img.icons8.com/?size=50&id=11759&format=png" />
+  </button>
+</div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+    
+    `;
+      trendingContainer.appendChild(div);
+    }
+  });
+};
+
+//
+document.getElementById("trendy-btn").addEventListener("click", () => {
+  document.getElementById("news-container").classList.add("hidden");
+  document.getElementById("trending-container").classList.remove("hidden");
+  document
+    .getElementById("most-viewed-btn")
+    .classList.remove("btn-outline-primary");
+  console.log(empty.length);
+  document.getElementById("number-of-news").innerText = `${
+    empty.length === 0
+      ? `No Trending News Found`
+      : `${empty.length} trending news found`
+  } `;
+});
+
+document.getElementById("most-viewed-btn").addEventListener("click", () => {
+  document.getElementById("news-container").classList.remove("hidden");
+  document.getElementById("trending-container").classList.add("hidden");
+  document
+    .getElementById("most-viewed-btn")
+    .classList.add("btn-outline-primary");
+  document.getElementById("number-of-news").innerText = `${
+    mostviewed.length === 0
+      ? `No News Found`
+      : `${mostviewed.length} news found in Breaking News`
+  } `;
+});
 
 loadCategoryData();

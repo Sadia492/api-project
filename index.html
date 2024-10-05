@@ -110,20 +110,18 @@
               autocomplete="off"
               checked
             />
-            <label class="btn btn-outline-primary" for="btnradio1"
-              >Most Viewed</label
+            <button
+              id="most-viewed-btn"
+              class="btn btn-outline-primary"
+              for="btnradio1"
             >
+              Most Viewed
+            </button>
 
-            <input
-              type="radio"
-              class="btn-check"
-              name="btnradio"
-              id="btnradio3"
-              autocomplete="ff"
-            />
-            <label class="btn btn-outline-primary disabled" for="btnradio3"
-              >Trendy</label
-            >
+            <input type="radio" class="btn-check" autocomplete="ff" />
+            <button id="trendy-btn" class="btn btn-outline-primary">
+              Trendy
+            </button>
           </div>
         </div>
       </nav>
@@ -152,6 +150,8 @@
       >
         No Data Found
       </section>
+
+      <section id="trending-container" class="hidden space-y-5"></section>
     </main>
 
     <!-- ----------------------------- JavaScripts ----------------------- -->
